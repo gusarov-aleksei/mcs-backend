@@ -1,0 +1,3 @@
+ERR-CART-001 External resource connection error
+ERR-CART-002 Cart cache error connection
+ERR-CART-003 Cart not found

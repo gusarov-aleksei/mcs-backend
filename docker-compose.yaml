@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+
+##Application
+  cart-service:
+    container_name: cart-service
+    image: cart-service:v.0.1
+    build: ./cart-service
+    ports:
+      - 8090:8090
+    links:
+      - redis:redis-cache
+    depends_on:
+      - redis
+      - catalog-service
+    environment:
+      JAVA_OPTS: -Xmx512m
+      SPRING_REDIS_HOST: redis-cache
+      CATALOG_URL: http://catalog-service:8091/api/catalog/
+
+  catalog-service:
+    container_name: catalog-service
+    image: catalog-service:v.0.1
+    build: ./catalog-service
+    ports:
+      - 8091:8091
+    depends_on:
+      - redis
+    environment:
+      JAVA_OPTS: -Xmx512m
+      SPRING_REDIS_HOST: redis-cache
+
+##Infrastructure
+  redis:
+    container_name: redis-cache
+    image: redis
+    restart: always
+    volumes:
+      - ./storage/redis/data:/data
+    ports:
+      - 6379:6379

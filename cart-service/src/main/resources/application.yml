@@ -1,0 +1,14 @@
+server:
+  port: 8090
+  redis:
+    timeout: 2000
+
+catalog:
+  url: http://localhost:8091/api/catalog/
+
+logging:
+  level:
+    ROOT: INFO
+    org.springframework: INFO
+    org.springframework.data: INFO
+    com.example: DEBUG

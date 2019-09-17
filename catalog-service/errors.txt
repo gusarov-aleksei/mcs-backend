@@ -1,0 +1,3 @@
+id: description
+ERR-CATALOG-001: Product not found
+ERR-CATALOG-100: Error while uploading file
