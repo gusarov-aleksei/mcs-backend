@@ -19,4 +19,3 @@ data class Cart(val id: String, var customerId: String?, var total: Double, val 
 
 @Serializer(forClass=Cart::class) /*Cart::javaClass*/
 object CartSerializer
-
