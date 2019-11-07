@@ -31,6 +31,18 @@ services:
       JAVA_OPTS: -Xmx512m
       SPRING_REDIS_HOST: redis-cache
 
+  customer-service:
+    container_name: customer-service
+    image: customer-service:v.0.1
+    build: ./customer-service
+    ports:
+      - 8093:8093
+    depends_on:
+      - mongo
+    environment:
+      JAVA_OPTS: -Xmx512m
+      CUSTOMER_DB_HOST: mongo-db
+
 ##Infrastructure
   redis:
     container_name: redis-cache
@@ -40,3 +52,12 @@ services:
       - ./storage/redis/data:/data
     ports:
       - 6379:6379
+
+  mongo:
+    container_name: mongo-db
+    image: mvertes/alpine-mongo
+    restart: always
+    volumes:
+      - ./storage/mongo/data:/data
+    ports:
+      - 27017:27017

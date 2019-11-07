@@ -1,0 +1,12 @@
+Mongodb useful commands.
+
+Run docker with mongo image:
+docker run -d --name mongo -p 27017:27017 -v $(pwd)/storage/mongo/data:/data/db mvertes/alpine-mongo
+
+Connect to docker instance:
+docker exec -it mongo sh
+
+Some operations on mongo data:
+show dbs
+use customer-service
+db.customer.find()

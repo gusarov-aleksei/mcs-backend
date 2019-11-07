@@ -1,0 +1,5 @@
+echo
+echo "running server.."
+echo
+
+java -jar ./target/customer-service-0.0.1-SNAPSHOT-jar-with-dependencies.jar
