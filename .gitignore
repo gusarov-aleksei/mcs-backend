@@ -1,6 +1,5 @@
-target/
+**/target
 .idea/
 .kotlintest/
-customer/
 storage
-*.iml
+**/*.iml

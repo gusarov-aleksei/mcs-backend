@@ -13,8 +13,8 @@ val customerModule = module {
 
         single { CustomerRequestValidatorImpl() as CustomerRequestValidator }
         single {
-                val dbHost = getProperty("CUSTOMER_DB_HOST", getProperty("customer.db.host", "localhost1"))
-                val dbPort = getProperty("CUSTOMER_DB_PORT", getProperty("customer.db.port", 127017))
+                val dbHost = getProperty("CUSTOMER_DB_HOST", getProperty("customer.db.host", "localhost"))
+                val dbPort = getProperty("CUSTOMER_DB_PORT", getProperty("customer.db.port", 27017))
                 CustomerRepositoryImpl(MongoClient(dbHost, dbPort),"customer-service") as CustomerRepository
         }
         single { CustomerServiceImpl(get(), get()) as CustomerService }

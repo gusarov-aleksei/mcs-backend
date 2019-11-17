@@ -23,5 +23,8 @@ sealed class Status {
     object NoFieldsToUpdate : Status() {
         val desc = "No fields requested"
     }
+    object CanNotReadRequest : Status() {
+        val desc = "Can't process input request"
+    }
     data class Error(val desc: String="Request was not processed") : Status()
 }

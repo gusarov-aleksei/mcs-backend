@@ -5,6 +5,7 @@ import io.ktor.http.HttpStatusCode
 
 fun mapToHttpCode(resp : Status) : HttpStatusCode  {
     return when (resp) {
+        is Status.CanNotReadRequest,
         is Status.CustomerIdInvalid,
         is Status.FieldValueInvalid,
         is Status.NoFieldsToUpdate,

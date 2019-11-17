@@ -140,6 +140,21 @@ class CustomerTest : FeatureSpec(){
                 resp.body shouldBe
                         mapOf("fields" to listOf("unexpectedField"), "desc" to "Invalid field name")
             }
+
+            scenario("Call customer create service with empty 'dateOfBirth'") {
+                val resp = httpClient.sendPost(customerCreateUrl(),
+                        "{\"fields\":{\"name\":\"John Smith\",\"email\":\"john@smith.com\",\"dateOfBirth\":\"\"}}")
+                resp.status shouldBe HttpStatus.SC_BAD_REQUEST
+                resp.body shouldBe
+                        mapOf("fields" to mapOf("dateOfBirth" to ""), "desc" to "Invalid field value")
+            }
+
+            scenario("Call customer create service with incorrect request body") {
+                val resp = httpClient.sendPost(customerCreateUrl(), "some random text!")
+                resp.status shouldBe HttpStatus.SC_BAD_REQUEST
+                resp.body shouldBe mapOf("desc" to "Can't process input request")
+            }
+
         }
 
         feature("Existing Customer getting by id (GET /api/customer/{id})") {
@@ -259,11 +274,13 @@ class CustomerTest : FeatureSpec(){
                 assertEntityInRepository(customerId, prerequisiteCustomerParameters)
             }
 
-            //TODO it causes 500 at server. need to prevalidate json before deserizlizing
-            /*scenario("test random request") {
-                val resp = httpClient.sendPost(customerCreateUrl(), "some random text")
-                println(resp)
-            }*/
+            scenario("Call customer update service with incorrect request body") {
+                val resp = httpClient.sendPost(customerUpdateUrl(), "some random text")
+                resp.status shouldBe HttpStatus.SC_BAD_REQUEST
+                resp.body shouldBe mapOf("desc" to "Can't process input request")
+            }
+
+            //TODO consider scenario with not running db
         }
     }
 }

@@ -1,11 +1,8 @@
 package com.example.customer.web
 
 import com.example.customer.service.api.*
-import com.example.customer.repository.CustomerRepositoryImpl
-import com.example.customer.service.CustomerRequestValidatorImpl
-import com.example.customer.service.CustomerServiceImpl
+import com.example.customer.service.CustomerService
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.mongodb.MongoClient
 import io.ktor.application.*
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
@@ -17,9 +14,11 @@ import io.ktor.request.receive
 import io.ktor.request.receiveParameters
 import io.ktor.response.respond
 import io.ktor.response.respondText
+import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
+import org.koin.ktor.ext.inject
 
 fun Application.main() {
     install(CallLogging) {}
@@ -35,42 +34,54 @@ fun Application.main() {
         }
     }
 
-    val dbHost = environment.config.propertyOrNull("customer.db.host")?.getString()?:"localhost"
-    val dbPort = environment.config.propertyOrNull("customer.db.port")?.getString()?.toIntOrNull()?:27017
     val customerEndpoint = environment.config.propertyOrNull("customer.endpoint")?.getString()?:"/v2/api/customer"
 
-    //TODO DI with Kodein or Koin library
-    val service = CustomerServiceImpl(
-            CustomerRepositoryImpl(MongoClient(dbHost, dbPort), "customer-service"),
-            CustomerRequestValidatorImpl()
-    )
     routing {
+        v2(customerEndpoint)
+    }
+}
 
-        get("/health_check") {
-            call.respondText("OK", ContentType.Text.Html)
-            log.info("health_check!")
-        }
+fun Routing.v2(endpoint: String) {
 
-        get("$customerEndpoint/{id}") {
-            val result = service.getCustomerById(call.parameters["id"])
-            log.debug("result, $result")
-            call.respond(mapToHttpCode(result), result)
-        }
+    val service : CustomerService by inject()
 
-        post("$customerEndpoint/create") {
-            //TODO consider case when invalid request to avoid exceptions like JsonParseException, UnrecognizedPropertyException
-            //if request is invalid return then HttpStatusCode.BadRequest instead of exception throwing exception and 500 http-code
-            //it would be performance improvement
-            //possible solution: to call method call.receiveParameters() an validate input before transforming to CustomerRequest
-            val result = service.createCustomer(call.receive())
-            log.debug("result, $result")
-            call.respond(mapToHttpCode(result), result)
-        }
+    get("/health_check") {
+        call.respondText("OK", ContentType.Text.Html)
+        call.application.log.info("health_check!")
+    }
 
-        post("$customerEndpoint/update") {
-            val result = service.updateCustomer(call.receive())
-            log.debug("result, $result")
-            call.respond(mapToHttpCode(result), result)
+    get("$endpoint/{id}") {
+        val result = service.getCustomerById(call.parameters["id"])
+        call.application.log.debug("result: $result")
+        call.respond(mapToHttpCode(result), result)
+    }
+
+    post("$endpoint/create") {
+        //TODO consider case when invalid request, to avoid exceptions like JsonParseException, UnrecognizedPropertyException
+        //it would be performance improvement
+        //possible solution: to call method call.receiveParameters() and validate input before transforming to CustomerRequest
+        val status = call.processRequest(service::createCustomer)
+        call.application.log.debug("result: $status")
+        call.respond(mapToHttpCode(status), status)
+    }
+
+    post("$endpoint/update") {
+        with(call) {
+            val status = processRequest(service::updateCustomer)
+            call.application.log.debug("result: $status")
+            respond(mapToHttpCode(status), status)
         }
+    }
+}
+
+suspend fun ApplicationCall.processRequest(operation: (CustomerRequest) -> Status ) : Status {
+    return runCatching {
+        receive<CustomerRequest>()
+    }.map {
+        operation(it)
+    }.onFailure {
+        application.log.error("Error in request reading: $it")
+    }.getOrElse {
+        Status.CanNotReadRequest
     }
 }

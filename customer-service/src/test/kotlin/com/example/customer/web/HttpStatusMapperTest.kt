@@ -15,6 +15,7 @@ class HttpStatusMapperTest : StringSpec({
     "mapToHttpCode should map service result to http code" {
         table (
                 headers("Operation result","Http code"),
+                row(Status.CanNotReadRequest, HttpStatusCode.BadRequest),
                 row(Status.CustomerIdInvalid("id"), HttpStatusCode.BadRequest),
                 row(Status.FieldValueInvalid(mapOf("field name" to "some value")), HttpStatusCode.BadRequest),
                 row(Status.NoFieldsToUpdate, HttpStatusCode.BadRequest),
