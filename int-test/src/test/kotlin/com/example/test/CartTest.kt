@@ -5,6 +5,7 @@ import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotlintest.matchers.maps.shouldContainExactly
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
+import io.kotlintest.specs.AbstractAnnotationSpec
 import io.kotlintest.specs.FeatureSpec
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
@@ -37,7 +38,7 @@ class CartTest : FeatureSpec(){
         redis.del("Cart:$id")
     }
 
-    fun loadProducts() {
+    private fun loadProducts() {
         val httpPost = HttpPost("${catalogBaseUrl()}/upload")
         httpPost.entity = MultipartEntityBuilder.create()
                 .addBinaryBody("file", File(productsFile()))
@@ -57,7 +58,7 @@ class CartTest : FeatureSpec(){
         loadProducts()
     }
 
-    fun cleanUpCatalog() {
+    private fun cleanUpCatalog() {
         redis.keys("Product:*").forEach {
             redis.del(it)
         }
@@ -215,5 +216,14 @@ class CartTest : FeatureSpec(){
         }
         //TODO to add test with timeout simulation at catalog service service side.
         // cart -> catalog -> catalog do something a long time ->  timeout exception at cart side
+
+        feature("Checkout cart") {
+            scenario("Successful checkout of existing cart with some product") {
+                var cart = useCart() //init cart
+                cart = useCart("${cart.id}/add?productId=1") //add Product to Cart
+                useCart("${cart.id}/checkout") //check out : place an Order
+                // TODO add kafka consumer in test and check OrderEvent.Create here
+            }
+        }
     }
 }
