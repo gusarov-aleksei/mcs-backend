@@ -3,6 +3,23 @@ server:
   redis:
     timeout: 2000
 
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      request.timeout.ms: 10000
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.example.cart.external.order.OrderSerializer
+      properties:
+        #Overall waiting (operation blocking) while trying to send messages to topic
+        #The configuration controls how long KafkaProducer.send() and KafkaProducer.partitionsFor() will block.
+        max.block.ms: 6000
+        #The base amount of time to wait before attempting to reconnect to a given host.
+        reconnect.backoff.ms: 6000
+
+order:
+  topic: OrderEventTopic
+
 catalog:
   url: http://localhost:8091/api/catalog/
 

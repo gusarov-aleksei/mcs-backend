@@ -14,10 +14,12 @@ services:
     depends_on:
       - redis
       - catalog-service
+      - kafka
     environment:
       JAVA_OPTS: -Xmx512m
       SPRING_REDIS_HOST: redis-cache
       CATALOG_URL: http://catalog-service:8091/api/catalog/
+      SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS: kafka:9092
 
   catalog-service:
     container_name: catalog-service
@@ -61,3 +63,20 @@ services:
       - ./storage/mongo/data:/data
     ports:
       - 27017:27017
+
+  zookeeper:
+    container_name: zookeeper
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  ## tmpfs: "/datalog"
+
+  kafka:
+    container_name: kafka
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "OrderEventTopic:1:1,CommonEventTopic:1:1"

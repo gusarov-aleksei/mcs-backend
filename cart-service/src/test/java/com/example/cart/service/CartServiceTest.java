@@ -3,6 +3,10 @@ package com.example.cart.service;
 import com.example.cart.external.catalog.CatalogResource;
 import com.example.cart.external.catalog.ResourceException;
 import com.example.cart.external.catalog.model.Product;
+import com.example.cart.external.order.CartToOrderConverter;
+import com.example.cart.external.order.OrderProducer;
+import com.example.cart.external.order.model.Item;
+import com.example.cart.external.order.model.OrderEvent;
 import com.example.cart.model.Cart;
 import com.example.cart.model.CartItem;
 import com.example.cart.repository.CartRepository;
@@ -17,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +41,12 @@ public class CartServiceTest {
 
     @Mock
     RestTemplate restTemplate;
+
+    @Mock
+    CartToOrderConverter cartToOrderConverter;
+
+    @Mock
+    OrderProducer orderProducer;
 
     @InjectMocks
     private CartServiceImpl cartService;
@@ -275,5 +286,37 @@ public class CartServiceTest {
         verify(cartRepository, times(300)).save(cart);
     }
 
+    private OrderEvent.Create createOrderEvent =
+            new OrderEvent.Create("customer-1", "99.99",
+                    List.of(new Item("product-1", "1", "99.99","99.99")));
 
+    @Test
+    public void testPlaceOrder_shouldCallCartToOrderConverter_whenCartExists() {
+        Cart cart = new Cart("cart-1");
+        doReturn(Optional.of(cart)).when(cartRepository).findById("cart-1");
+        doReturn(createOrderEvent).when(cartToOrderConverter).convert(cart);
+
+        cartService.placeOrder("cart-1");
+
+        verify(cartToOrderConverter, times(1)).convert(cart);
+    }
+
+    @Test
+    public void testPlaceOrder_doesNotCallCartToOrderConverter_whenNoCartExist() {
+        doReturn(Optional.empty()).when(cartRepository).findById("cart-1");
+        cartService.placeOrder("cart-1");
+
+        verify(cartToOrderConverter, times(0)).convert(any(Cart.class));
+    }
+
+    @Test
+    public void testPlaceOrder_shouldPlaceOrder_whenCartExists() {
+        Cart cart = new Cart("cart-1");
+        doReturn(Optional.of(cart)).when(cartRepository).findById("cart-1");
+        doReturn(createOrderEvent).when(cartToOrderConverter).convert(cart);
+
+        cartService.placeOrder("cart-1");
+
+        verify(orderProducer, times(1)).placeOrder(createOrderEvent);
+    }
 }

@@ -1,0 +1,23 @@
+Build separate docker image declared inside docker-compose.yaml
+docker-compose build cart-service
+
+Rum separate docker container
+docker-compose up -d cart-service
+
+docker-compose restart worker
+
+Stop separate service
+docker-compose stop -t 2 cart-service
+
+Remove images of "cart-service" service
+docker rmi -f $(docker images -f=reference="cart-service" -q)
+
+Get all container ids of "cart-service" image
+docker ps -a --filter "name=cart-service" -q
+
+Stop running containers of "cart-service"
+docker stop $(docker ps --filter "name=cart-service" -q)
+docker rm $(docker ps --filter "name=cart-service" -q -a)
+
+Display logs
+docker-compose logs cart-service

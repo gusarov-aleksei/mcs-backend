@@ -2,6 +2,8 @@ package com.example.cart.service;
 
 import com.example.cart.external.catalog.CatalogResource;
 import com.example.cart.external.catalog.model.Product;
+import com.example.cart.external.order.CartToOrderConverter;
+import com.example.cart.external.order.OrderProducer;
 import com.example.cart.model.Cart;
 import com.example.cart.model.CartItem;
 import com.example.cart.repository.CartRepository;
@@ -22,6 +24,12 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     private CatalogResource catalog;
+
+    @Autowired
+    private OrderProducer orderProducer;
+
+    @Autowired
+    private CartToOrderConverter orderEventConverter;
 
     static final Logger log = LoggerFactory.getLogger(CartServiceImpl.class);
 
@@ -113,14 +121,15 @@ public class CartServiceImpl implements CartService {
         return catalog.getProduct(productId);
     }
 
-    public Optional<Cart> placeOrder(String id) {
+    public Optional<Cart> placeOrder(final String id) {
         Optional<Cart> opCart = repository.findById(id);
+        // TODO return info about result: success or info about error
+        opCart.map(orderEventConverter::convert)
+                .ifPresentOrElse(orderProducer::placeOrder, () -> log.warn("Cart not found id {}", id));
         //if cart exists
         //check if customer created if not then ask to create (customer creation will update customer id in cart )
         //create order based on cart and submit
         //update cart as checked out or remove cart from redis repository.delete(opCart.get());
         return opCart;
     }
-
-
 }
