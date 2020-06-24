@@ -217,8 +217,8 @@ class CartTest : FeatureSpec(){
         //TODO to add test with timeout simulation at catalog service service side.
         // cart -> catalog -> catalog do something a long time ->  timeout exception at cart side
 
-        feature("Checkout cart") {
-            scenario("Successful checkout of existing cart with some product") {
+        feature("Checkout Cart") {
+            scenario("Successful checkout of existing Cart with some Product") {
                 var cart = useCart() //init cart
                 cart = useCart("${cart.id}/add?productId=1") //add Product to Cart
                 useCart("${cart.id}/checkout") //check out : place an Order
