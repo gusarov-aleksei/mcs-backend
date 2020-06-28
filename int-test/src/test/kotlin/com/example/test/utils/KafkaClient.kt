@@ -34,9 +34,9 @@ class KafkaClient<T>(props: Properties, topics: List<String>) : Closeable  {
     fun consume(handler: (orderEvent: ConsumerRecord<String, T>) -> Unit) {
         //consumer.use {
         println("Inside consumer")
-            consumer.poll(duration).forEach {
-                handler(it)
-            }
+        consumer.poll(duration).forEach {
+            handler(it)
+        }
         //}
     }
 
