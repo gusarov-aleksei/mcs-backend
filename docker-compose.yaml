@@ -19,7 +19,7 @@ services:
       JAVA_OPTS: -Xmx512m
       SPRING_REDIS_HOST: redis-cache
       CATALOG_URL: http://catalog-service:8091/api/catalog/
-      SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS: kafka:9092
+      SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS: kafka:9094
 
   catalog-service:
     container_name: catalog-service
@@ -74,9 +74,16 @@ services:
   kafka:
     container_name: kafka
     image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
     ports:
       - "9092:9092"
+    expose:
+      - "9094"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9094,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9094,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "OrderEventTopic:1:1,CommonEventTopic:1:1"
