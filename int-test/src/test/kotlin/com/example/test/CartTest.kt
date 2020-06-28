@@ -1,11 +1,13 @@
 package com.example.test
 
+import com.example.test.utils.KafkaClient
+import com.example.test.utils.orderConsumerProperties
 import io.kotlintest.Spec
 import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotlintest.matchers.maps.shouldContainExactly
+import io.kotlintest.matchers.types.shouldNotBeNull
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
-import io.kotlintest.specs.AbstractAnnotationSpec
 import io.kotlintest.specs.FeatureSpec
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
@@ -16,15 +18,15 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import redis.clients.jedis.Jedis
 import java.io.File
-
 
 /*
     Test performs and validates scenarios of Cart related features. That are http calls to remote Cart Service.
  */
 @ImplicitReflectionSerializer
-class CartTest : FeatureSpec(){
+abstract class AbstractCartTest : FeatureSpec(){
 
     val client = autoClose(HttpClients.createDefault())//HttpClientUtils.closeQuietly(client)
 
@@ -44,8 +46,8 @@ class CartTest : FeatureSpec(){
                 .addBinaryBody("file", File(productsFile()))
                 .build()
         return client.execute(httpPost).use {
-                resp -> resp.statusLine.statusCode shouldBe 200
-                EntityUtils.toString(resp.entity)
+            resp -> resp.statusLine.statusCode shouldBe 200
+            EntityUtils.toString(resp.entity)
         }
     }
 
@@ -83,6 +85,23 @@ class CartTest : FeatureSpec(){
         return client.execute(HttpGet("${cartBaseUrl()}/${extendedUrl}")).use {
             it.statusLine.statusCode shouldBe 200
             json.parse(CartSerializer, EntityUtils.toString(it.entity))
+        }
+    }
+}
+
+/*
+    Test performs and validates scenarios of Cart related features. That are http calls to remote Cart Service.
+ */
+@ImplicitReflectionSerializer
+class CartTest : AbstractCartTest() {
+
+    private fun cleanUpCartRepository(id: String) {
+        redis.del("Cart:$id")
+    }
+
+    private fun cleanUpCatalog() {
+        redis.keys("Product:*").forEach {
+            redis.del(it)
         }
     }
 
@@ -216,14 +235,46 @@ class CartTest : FeatureSpec(){
         }
         //TODO to add test with timeout simulation at catalog service service side.
         // cart -> catalog -> catalog do something a long time ->  timeout exception at cart side
+    }
+}
 
+@ImplicitReflectionSerializer
+class CheckoutCartTest : AbstractCartTest() {
+    init {
         feature("Checkout Cart") {
             scenario("Successful checkout of existing Cart with some Product") {
                 var cart = useCart() //init cart
                 cart = useCart("${cart.id}/add?productId=1") //add Product to Cart
+                println(cart)
                 useCart("${cart.id}/checkout") //check out : place an Order
-                // TODO add kafka consumer in test and check OrderEvent.Create here
+                // validate OrderEvent in kafka topic
+                val kafkaClient = KafkaClient<OrderEvent>(orderConsumerProperties(), listOf("OrderEventTopic"));
+                // consume event and close connection to kafka
+                var eventConsumed = false; // to check if event was consumed
+                kafkaClient.use {
+                    repeat(3) {
+                        kafkaClient.consume {
+                            assertOrderEvent(it)
+                            eventConsumed = true;
+                        }
+                    }
+                }
+                eventConsumed shouldBe true
             }
         }
+    }
+}
+
+fun assertOrderEvent(record: ConsumerRecord<String, OrderEvent>) {
+    //println("offset = ${record.offset()}, key = ${record.key()}, value = ${record.value()}")
+    when (val value = record.value()) {
+        is OrderEvent.Create -> {
+            value.shouldNotBeNull()
+            value.customerId shouldBe "id-anonymous"
+            value.totalToPay shouldBe "10.32"
+            value.items shouldContainExactlyInAnyOrder listOf(Item("1", "1", "10.32", "10.32"))
+        }
+        is OrderEvent.Pay -> {}
+        is OrderEvent.Complete -> {}
     }
 }
