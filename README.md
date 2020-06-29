@@ -1,4 +1,4 @@
-#Microservices backend
+# Microservices backend
 
 This project can be considered as example of microservices approach. It covers online shopping domain and consists of several modules or microservices: cart-service, catalog-service, customer-service.
 
@@ -14,7 +14,7 @@ Main purpose of this project is to try and study some technologies.  Following l
 
 Every module is placed into docker image (see dockerfile at module directory) and instantiated by docker-compose (see [`docker-compose.yaml`](https://github.com/gusarov-aleksei/mcs-backend/blob/master/docker-compose.yaml)).
 
-###Scripts to operate with modules
+### Scripts to operate with modules
 Build and create docker image for all modules
 ```
 ./build.sh
