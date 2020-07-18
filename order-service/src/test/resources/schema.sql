@@ -1,0 +1,14 @@
+CREATE TYPE order_statuses AS ENUM ('CREATED', 'PAYED', 'COMPLETED');
+
+CREATE TABLE IF NOT EXISTS orders (
+id SERIAL PRIMARY KEY,
+customer_id UUID NOT NULL,
+total_to_pay DECIMAL(19,4) NOT NULL,
+order_status order_statuses NOT NULL);
+
+CREATE TABLE IF NOT EXISTS order_details (
+order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+product_id INTEGER NOT NULL,
+quantity INTEGER NOT NULL,
+price DECIMAL(19,4) NOT NULL,
+total DECIMAL(19,4) NOT NULL);
