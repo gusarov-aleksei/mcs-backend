@@ -3,8 +3,8 @@ package com.example.order.dao
 import com.example.order.model.Item
 import com.example.order.model.Order
 import com.example.order.model.Status
-import com.example.order.test.anotherCreateEventSample
-import com.example.order.test.createEventSample
+import com.example.order.test.ANOTHER_CREATE_EVENT_SAMPLE
+import com.example.order.test.CREATE_EVENT_SAMPLE
 import com.zaxxer.hikari.HikariDataSource
 import io.mockk.every
 import io.mockk.mockk
@@ -46,8 +46,8 @@ class OrderDaoIntTest {
 
     @Test
     fun `should create order in data base`() {
-        orderDao.createOrder(createEventSample())
-        orderDao.createOrder(anotherCreateEventSample())
+        orderDao.createOrder(CREATE_EVENT_SAMPLE)
+        orderDao.createOrder(ANOTHER_CREATE_EVENT_SAMPLE)
         val orders = selectAllOrdersWithoutDetails(ds)
         assertEquals(2, orders.count())
         val expected = listOf(
@@ -59,11 +59,10 @@ class OrderDaoIntTest {
 
     @Test
     fun `should find orders by customer id`() {
-        val event = createEventSample()
-        orderDao.createOrder(event)
-        orderDao.createOrder(anotherCreateEventSample())
+        orderDao.createOrder(CREATE_EVENT_SAMPLE)
+        orderDao.createOrder(ANOTHER_CREATE_EVENT_SAMPLE)
 
-        val orders = orderDao.findOrdersWithDetailsByCustomerId(event.customerId)
+        val orders = orderDao.findOrdersWithDetailsByCustomerId(CREATE_EVENT_SAMPLE.customerId)
 
         assertEquals(1, orders.count())
         val expected = listOf(
@@ -76,9 +75,8 @@ class OrderDaoIntTest {
 
     @Test
     fun `should find order details by order id`() {
-        val event = createEventSample()
-        orderDao.createOrder(event)
-        orderDao.createOrder(anotherCreateEventSample())
+        orderDao.createOrder(CREATE_EVENT_SAMPLE)
+        orderDao.createOrder(ANOTHER_CREATE_EVENT_SAMPLE)
 
         val orderDetails = orderDao.findOrderDetailsByOrderId(1)
 

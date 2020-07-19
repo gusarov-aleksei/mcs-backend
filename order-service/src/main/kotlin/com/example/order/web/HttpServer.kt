@@ -1,8 +1,8 @@
 package com.example.order.web
 
 import com.example.order.dao.OrderRepository
-import com.example.order.test.anotherCreateEventSample
-import com.example.order.test.createEventSample
+import com.example.order.test.ANOTHER_CREATE_EVENT_SAMPLE
+import com.example.order.test.CREATE_EVENT_SAMPLE
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import java.lang.Exception
@@ -68,8 +68,8 @@ class OrderController(private val orderDao: OrderRepository) : AutoCloseable  {
     }
 
     fun initTestData(context: Context) {
-        context.json(orderDao.createOrder(createEventSample()))
-        context.json(orderDao.createOrder(anotherCreateEventSample()))
+        context.json(orderDao.createOrder(CREATE_EVENT_SAMPLE))
+        context.json(orderDao.createOrder(ANOTHER_CREATE_EVENT_SAMPLE))
     }
 
     override fun close() {

@@ -1,8 +1,8 @@
 package com.example.order
 
 import com.example.order.dao.*
-import com.example.order.test.anotherCreateEventSample
-import com.example.order.test.createEventSample
+import com.example.order.test.ANOTHER_CREATE_EVENT_SAMPLE
+import com.example.order.test.CREATE_EVENT_SAMPLE
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.util.*
@@ -15,8 +15,8 @@ fun main() {
     val ds = HikariDataSource(HikariConfig(hikariProps()))
     val orderDao = OrderDao(ds)
 
-    orderDao.createOrder(createEventSample())
-    orderDao.createOrder(anotherCreateEventSample())
+    orderDao.createOrder(CREATE_EVENT_SAMPLE)
+    orderDao.createOrder(ANOTHER_CREATE_EVENT_SAMPLE)
 
     Runtime.getRuntime().addShutdownHook(Thread(Runnable { ds.close()}))
 }
