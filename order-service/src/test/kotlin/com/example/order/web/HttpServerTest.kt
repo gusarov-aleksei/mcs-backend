@@ -1,5 +1,6 @@
 package com.example.order.web
 
+import com.example.order.dao.OrderDao
 import com.example.order.dao.OrderRepository
 import com.example.order.model.Item
 import com.example.order.model.Order
@@ -9,6 +10,9 @@ import io.javalin.Javalin
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.jackson.responseObject
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.eclipse.jetty.http.HttpStatus
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -76,6 +80,8 @@ class HttpServerTest {
 
 }
 
+val mutableItems = mutableListOf(Item(1,2,32.55, 65.1))
+
 class OrderDaoStub : OrderRepository {
     override fun findOrdersWithDetailsByCustomerId(customerId: String): Collection<Order> {
         if ("1bec138e-689e-485b-be91-4f05d7a13a55" == customerId) {
@@ -111,6 +117,25 @@ class OrderDaoStub : OrderRepository {
         } else {
             null
     }
+
+    override fun close() {
+    }
 }
 
-val mutableItems = mutableListOf(Item(1,2,32.55, 65.1))
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("HTTP Server close")
+class HttpServerCloseTest() {
+
+    @Test
+    fun `should be able to close dao resources`() {
+        val orderDaoMock = mockk<OrderDao>()
+        every {orderDaoMock.close()} returns Unit
+
+        val orderController = OrderController(orderDaoMock)
+        val httpServer = HttpServer(8080, orderController).init()
+        httpServer.stop()
+
+        verify(exactly = 1) { orderDaoMock.close() }
+
+    }
+}

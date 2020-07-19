@@ -14,11 +14,4 @@ fun main(args: Array<String>) {
 
     // clean up resources when main thread is stopped
     Runtime.getRuntime().addShutdownHook(Thread( Runnable { httpServer.stop() }))
-    httpServer.events {
-        it.serverStopped {
-            // call data source cleaning
-            dataSource.close()
-            println("Clean up resources")
-        }
-    }
 }

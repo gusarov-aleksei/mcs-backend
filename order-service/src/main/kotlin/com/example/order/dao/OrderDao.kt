@@ -10,7 +10,7 @@ import java.sql.Connection
 import java.sql.ResultSet
 import javax.sql.DataSource
 
-interface OrderRepository {
+interface OrderRepository : AutoCloseable {
 
     fun findOrdersWithDetailsByCustomerId(customerId : String) : Collection<Order>
 
@@ -26,7 +26,7 @@ interface OrderRepository {
 }
 
 
-class OrderDao(private val dataSource: DataSource) : OrderRepository {
+class OrderDao(private val dataSource: HikariDataSource) : OrderRepository {
     /**
      * Retrieve Orders with Details by customer Id
      */
@@ -129,6 +129,10 @@ class OrderDao(private val dataSource: DataSource) : OrderRepository {
     override fun findOrderById(id: Int) : Order? {
         return null;
         //TODO()
+    }
+
+    override fun close() {
+        dataSource.close()
     }
 }
 

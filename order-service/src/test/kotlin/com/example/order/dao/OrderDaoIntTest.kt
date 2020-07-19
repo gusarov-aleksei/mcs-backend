@@ -6,10 +6,14 @@ import com.example.order.model.Status
 import com.example.order.test.anotherCreateEventSample
 import com.example.order.test.createEventSample
 import com.zaxxer.hikari.HikariDataSource
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.testcontainers.containers.BindMode
 import org.testcontainers.containers.GenericContainer
 import org.junit.jupiter.api.Assertions.assertEquals
+import javax.sql.DataSource
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Order DAO test")
@@ -96,4 +100,22 @@ fun initDataSource(host: String, port : Int) = HikariDataSource().apply {
     jdbcUrl = "jdbc:postgresql://$host:$port/order_db"
     username = "order_user"
     password = "order_pass"
+}
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Order DAO close test")
+class OrderDaoCloseTest {
+
+    @Test
+    fun `should be able to close its data source`() {
+        val dsMock = mockk<HikariDataSource>()
+        val orderDao = OrderDao(dsMock)
+        every { dsMock.close() } returns Unit
+
+        orderDao.close()
+
+        verify(exactly = 1) { dsMock.close() }
+    }
+
+
 }

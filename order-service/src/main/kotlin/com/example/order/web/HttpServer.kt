@@ -34,11 +34,19 @@ class HttpServer(private val port : Int, private val orderController: OrderContr
                 orderController.initTestData(it)
             }
         }
+
+        app.events {
+            it.serverStopped {
+                // call data source cleaning
+                orderController.close()
+                println("Clean up resources")
+            }
+        }
         return app
     }
 }
 
-class OrderController(private val orderDao: OrderRepository) {
+class OrderController(private val orderDao: OrderRepository) : AutoCloseable  {
 
     fun findOrderDetailsByOrderId(context: Context) {
         val orderId = context.pathParam("order-id").toInt()
@@ -62,5 +70,9 @@ class OrderController(private val orderDao: OrderRepository) {
     fun initTestData(context: Context) {
         context.json(orderDao.createOrder(createEventSample()))
         context.json(orderDao.createOrder(anotherCreateEventSample()))
+    }
+
+    override fun close() {
+        orderDao.close()
     }
 }
