@@ -1,5 +1,7 @@
 package com.example.order.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.kafka.common.serialization.Deserializer
 
@@ -11,6 +13,8 @@ data class Item(
         val total: Double
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, visible = true)
 sealed class OrderEvent {
     data class Create(val customerId: String, val totalToPay: Double, val items: Collection<Item>) : OrderEvent()
     data class Pay(val orderId : Int) : OrderEvent()
