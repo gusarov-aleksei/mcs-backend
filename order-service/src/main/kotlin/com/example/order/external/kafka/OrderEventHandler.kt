@@ -7,7 +7,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 class OrderEventHandler(private val orderService: OrderService) {
 
     fun handle(record: ConsumerRecord<String, OrderEvent>) {
-        println(record)
         orderService.processOrderEvent(record.value())
     }
 
