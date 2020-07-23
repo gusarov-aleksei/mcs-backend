@@ -14,11 +14,3 @@ val ANOTHER_CREATE_EVENT_SAMPLE = OrderEvent.Create(
         50.88,
         listOf(Item(1,3,10.06,30.18), Item(3,4,5.2,20.8))
 )
-
-fun anotherCreateEventSample() : OrderEvent.Create {
-    return OrderEvent.Create(
-            "1bec138e-689e-485b-be91-4f05d7a13a56",
-            50.88,
-            listOf(Item(1,3,10.06,30.18), Item(3,4,5.2,20.8))
-    )
-}
