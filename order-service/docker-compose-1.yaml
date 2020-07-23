@@ -1,0 +1,30 @@
+version: '3'
+services:
+
+  order_db:
+    container_name: postgres
+    image: postgres:12.3-alpine
+    environment:
+      - POSTGRES_DB=order_db
+      - POSTGRES_USER=order_user
+      - POSTGRES_PASSWORD=order_pass
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  zookeeper:
+    container_name: zookeeper
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    container_name: kafka
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_CREATE_TOPICS: "OrderEventTopic:1:1,CommonEventTopic:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
