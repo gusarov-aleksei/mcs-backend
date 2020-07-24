@@ -1,5 +1,5 @@
 Connect to psql command line
-docker exec -it postgres psql -U order_user -d order_db
+docker exec -it order-postgres psql -U order_user -d order_db
 
 Show data type description
 \dT+ order_statuses

@@ -1,9 +1,11 @@
 package com.example.order.dao
 
+import com.example.order.DATA_SOURCE_PROPERTIES
 import com.example.order.model.Item
 import com.example.order.model.Order
 import com.example.order.model.OrderEvent
 import com.example.order.model.Status
+import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.lang.Exception
 import java.sql.Connection
@@ -136,8 +138,4 @@ class OrderDao(private val dataSource: HikariDataSource) : OrderRepository {
     }
 }
 
-fun initDataSource() = HikariDataSource().also {
-    it.jdbcUrl = "jdbc:postgresql://localhost/order_db"
-    it.username = "order_user"
-    it.password = "order_pass"
-}
+fun initDataSource() = HikariDataSource(HikariConfig(DATA_SOURCE_PROPERTIES))
