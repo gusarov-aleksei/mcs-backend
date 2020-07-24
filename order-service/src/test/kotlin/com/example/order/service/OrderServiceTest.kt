@@ -6,8 +6,12 @@ import com.example.order.test.CREATE_EVENT_SAMPLE
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Order service logic test")
 class OrderServiceTest {
 
     @Test

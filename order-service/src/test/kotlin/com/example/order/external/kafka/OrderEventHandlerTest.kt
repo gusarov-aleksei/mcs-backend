@@ -8,9 +8,13 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Order event handler test")
 class OrderEventHandlerTest {
 
     @Test
