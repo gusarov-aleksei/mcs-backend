@@ -30,7 +30,7 @@ class HttpServer(private val port : Int, private val orderController: OrderContr
                 orderController.findOrderById(it)
             }
 
-            ApiBuilder.get("/orders/init-test-data") {
+            ApiBuilder.get("/init-test-data") {
                 orderController.initTestData(it)
             }
         }
@@ -70,6 +70,7 @@ class OrderController(private val orderDao: OrderRepository) : AutoCloseable  {
     fun initTestData(context: Context) {
         context.json(orderDao.createOrder(CREATE_EVENT_SAMPLE))
         context.json(orderDao.createOrder(ANOTHER_CREATE_EVENT_SAMPLE))
+        context.result("Test data generated")
     }
 
     override fun close() {
