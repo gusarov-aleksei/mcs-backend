@@ -18,3 +18,9 @@ kafka-console-producer.sh --bootstrap-server localhost:9092 --topic orders
 
 Receive messages from broker
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic orders --from-beginning
+
+Make retention small to remove messages automatically
+kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --alter --entity-name OrderEventTopic --add-config retention.ms=1000
+
+Show info about topic
+kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name OrderEventTopic --describe --all

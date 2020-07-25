@@ -20,6 +20,7 @@ class OrdersConsumer(private val topics: List<String>) {
         props.setProperty("reconnect.backoff.ms", "3000")
         props.setProperty("reconnect.backoff.max.ms", "4000")
         props.setProperty("request.timeout.ms", "2000")
+        props.setProperty("retry.backoff.ms", "2000")
         props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
         props.setProperty("value.deserializer", "com.example.kafka.OrderDeserializer")
         //to consume topic from the beginning

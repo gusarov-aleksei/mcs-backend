@@ -33,8 +33,7 @@ fun main() {
     val deserialized1 = jacksonObjectMapper().readValue(payEventBytes, OrderEvent.Pay::class.java)
     println("deserialized = $deserialized1")
 
-    val order = Order(listOf(Item("1", "1", "1.20", "1.20")))
-    val createOrder = OrderEvent.Create("customer 1", "100.10", order)
+    val createOrder = OrderEvent.Create("customer 1", "100.10", listOf(Item("1", "1", "1.20", "1.20")))
     val bytes = jacksonObjectMapper().writeValueAsBytes(createOrder)
     val deserialized  = jacksonObjectMapper().readValue(bytes, OrderEvent::class.java)
     println("deserializedOrderEvent = $deserialized")

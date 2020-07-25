@@ -9,14 +9,10 @@ data class Item(
         val total: String
 )
 
-data class Order(
-        val items: Collection<Item>
-)
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, visible = true)
 sealed class OrderEvent {
-    data class Create(val customerId: String, val totalToPay: String, val order: Order) : OrderEvent()
+    data class Create(val customerId: String, val totalToPay: String, val items: Collection<Item>) : OrderEvent()
     data class Pay(val orderId:String) : OrderEvent()
     data class Complete(val orderId:String) : OrderEvent()
 }
