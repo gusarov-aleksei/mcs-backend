@@ -84,7 +84,7 @@ abstract class AbstractCartTest : FeatureSpec(){
     fun useCart(extendedUrl : String = "") : Cart {
         return client.execute(HttpGet("${cartBaseUrl()}/${extendedUrl}")).use {
             it.statusLine.statusCode shouldBe 200
-            json.parse(CartSerializer, EntityUtils.toString(it.entity))
+            json.parse(Cart.serializer(), EntityUtils.toString(it.entity))
         }
     }
 }
@@ -170,7 +170,7 @@ class CartTest : AbstractCartTest() {
                 cart = client.execute(HttpGet("${cartBaseUrl()}/${cart.id}/add?productId=1")).use {
                     it.statusLine.statusCode shouldBe 200
                     val body = EntityUtils.toString(it.entity)
-                    json.parse(CartSerializer, body)
+                    json.parse(Cart.serializer(), body)
                 }
 
                 cart.total shouldBe 10.32

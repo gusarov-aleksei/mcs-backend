@@ -4,6 +4,7 @@ import io.kotlintest.Spec
 import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FeatureSpec
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.list
@@ -76,7 +77,7 @@ class CatalogTest : FeatureSpec() {
 
                 val products = client.execute(HttpGet("${catalogBaseUrl()}/")).use {
                     it.statusLine.statusCode shouldBe 200
-                    json.parse(ProductSerializer.list,  EntityUtils.toString(it.entity))
+                    json.parse(Product.serializer().list,  EntityUtils.toString(it.entity))
                 }
 
                 products shouldContainExactlyInAnyOrder listOf(
@@ -89,7 +90,7 @@ class CatalogTest : FeatureSpec() {
 
                 val product = client.execute(HttpGet("${catalogBaseUrl()}/1")).use {
                     it.statusLine.statusCode shouldBe 200
-                    json.parse(ProductSerializer,  EntityUtils.toString(it.entity))
+                    json.parse(Product.serializer(),  EntityUtils.toString(it.entity))
                 }
 
                 product shouldBe Product("1", "Hammer", 10.32,"A tool with a heavy metal head")
