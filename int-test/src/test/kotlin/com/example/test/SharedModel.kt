@@ -15,6 +15,7 @@ data class CartItem(val productId: String, val name: String, var price: Double, 
 @Serializable
 data class Cart(val id: String, var customerId: String?, var total: Double, val cartItems: List<CartItem>)
 
+@Serializable
 data class Item(
         val productId: String,
         val quantity: String,
@@ -40,3 +41,16 @@ class OrderDeserializer: Deserializer<OrderEvent> {
         }
     }
 }
+
+enum class Status {
+    CREATED, PAYED, COMPLETED
+}
+
+@Serializable
+data class Order(
+        val orderId: Int,
+        val customerId: String,
+        val totalToPay: Double,
+        val status: Status = Status.CREATED,
+        val details: Collection<Item>
+)
