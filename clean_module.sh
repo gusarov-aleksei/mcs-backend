@@ -1,6 +1,6 @@
 set -e
 
-modules=(cart-service catalog-service customer-service);
+modules=(cart-service catalog-service customer-service order-service);
 module=$1
 echo "Clean one module: $module"
 echo "Existing modules: ${modules[*]}"
@@ -21,5 +21,5 @@ then
   remove_image_by_name "$module"
 else
   echo "Module name is unknown."
-  echo "Please put one of following: cart-service, catalog-service, customer-service "
+  echo "Please put one of following: cart-service, catalog-service, customer-service, order-service"
 fi

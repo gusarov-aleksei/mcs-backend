@@ -48,7 +48,7 @@ services:
   order-service:
     container_name: order-service
     image: order-service:v.0.1
-    build: .
+    build: ./order-service
     ports:
       - 8094:8094
     depends_on:
@@ -66,7 +66,7 @@ services:
   order-consumer:
     container_name: order-consumer
     image: order-service:v.0.1
-    build: .
+    build: ./order-service
     command: java ${JAVA_OPTS} -cp ./order-service-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.example.order.EventConsumerKt
     depends_on:
       - order-postgres

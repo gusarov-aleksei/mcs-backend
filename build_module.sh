@@ -1,6 +1,6 @@
 set -e
 
-modules=(cart-service catalog-service customer-service);
+modules=(cart-service catalog-service customer-service order-service);
 module=$1
 echo "Build one module: $module"
 echo "Existing modules: ${modules[*]}"
@@ -12,5 +12,5 @@ then
   docker-compose build "$module"
 else
   echo "Module name is unknown."
-  echo "Please put one of following: cart-service, catalog-service, customer-service "
+  echo "Please put one of following: cart-service, catalog-service, customer-service, order-service"
 fi

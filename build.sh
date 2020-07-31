@@ -11,6 +11,9 @@ mvn -f ./cart-service/pom.xml clean install
 echo "Building customer..."
 mvn -f ./customer-service/pom.xml clean install
 
+echo "Building order..."
+mvn -f ./order-service/pom.xml clean install
+
 echo
 echo "Building images..."
 docker-compose build --no-cache

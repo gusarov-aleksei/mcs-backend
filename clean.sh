@@ -10,6 +10,9 @@ mvn -f ./cart-service clean
 echo "Removing customer artefacts..."
 mvn -f ./customer-service clean
 
+echo "Removing order artefacts..."
+mvn -f ./order-service clean
+
 echo "Removing int-test artefacts..."
 mvn -f ./int-test clean
 
@@ -32,5 +35,6 @@ else
   remove_image_by_name "cart-service"
   remove_image_by_name "catalog-service"
   remove_image_by_name "customer-service"
+  remove_image_by_name "order-service"
 fi
 echo "Cleaning finished"
