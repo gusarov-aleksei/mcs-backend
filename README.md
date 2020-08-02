@@ -1,14 +1,15 @@
 # Microservices backend
 
-This project can be considered as example of microservices approach. It covers online shopping domain and consists of several modules or microservices: cart-service, catalog-service, customer-service.
+This project can be considered as example of microservices approach. It covers online shopping domain and consists of several modules or microservices: cart-service, catalog-service, customer-service, order-service.
 
-Main purpose of this project is to try and study some technologies.  Following languages, libraries and tools are used here: Kotlin, Java, Spring, Ktor, Kafka, Redis, MongoDB, JUnit, KotlinTest, TestContainers.
+Main purpose of this project is to try and study some technologies.  Following languages, libraries and tools are used here: Kotlin, Java, Spring, Ktor, Javalin, Kafka, Redis, MongoDB, Postgres, JUnit, KotlinTest, TestContainers.
 
 | Module | Description |
 |----------|---------|
 | [`cart-service`](./cart-service)| Module provides support of buying products. It includes features: add product to cart, remove product from cart, calculate price of products, checkout cart.|
 | [`catalog-service`](./catalog-service)| Module holds information about products to sell and implements features add product for selling, retrieve products for selling.|
 | [`customer-service`](./customer-service)| Module contains api and data regarding to customer profile. It includes features: create customer profile, update profile.|
+| [`order-service`](./order-service)| It contains api and data of order domain and includes features: create order, update order, get order history, etc.
 | [`int-test`](./int-test)| Integration tests. Goal of module is application testing. It produces HTTP-requests to modules according to some users scenario and validates response result and system state.|
 | [`tech-check`](./tech-check)| Module for experiments with technologies, libraries, etc.|
 
